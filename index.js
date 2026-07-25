@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json());
+
 const PORT = 3000;
 
 // app.get('/', (req, res) => {
@@ -44,6 +46,37 @@ app.get('/tasks/:id', (req, res) => {
     }
 
     res.json(task);
+});
+
+// POST /tasks
+app.post('/tasks', (req, res) => {
+    const { title } = req.body;
+
+    // Validate input
+    if (!title || title.trim() === '') {
+        return res.status(400).json({
+            error: "Title is required"
+        });
+    }
+
+    // Generate next ID
+    const nextId =
+        tasks.length > 0
+            ? Math.max(...tasks.map(task => task.id)) + 1
+            : 1;
+
+    // Create new task
+    const newTask = {
+        id: nextId,
+        title: title.trim(),
+        done: false
+    };
+
+    // Save in memory
+    tasks.push(newTask);
+
+    // Return created task
+    res.status(201).json(newTask);
 });
 
 app.listen(PORT, () => {
