@@ -78,6 +78,64 @@ app.post('/tasks', (req, res) => {
     // Return created task
     res.status(201).json(newTask);
 });
+// PUT /tasks/:id
+app.put('/tasks/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const task = tasks.find(task => task.id === id);
+
+    // Check if task exists
+    if (!task) {
+        return res.status(404).json({
+            error: `Task ${id} not found`
+        });
+    }
+
+    const { title, done } = req.body;
+
+    // Validate request body
+    if (
+        req.body == null ||
+        Object.keys(req.body).length === 0 ||
+        (title !== undefined && title.trim() === '') ||
+        (done !== undefined && typeof done !== 'boolean')
+    ) {
+        return res.status(400).json({
+            error: "Invalid request body"
+        });
+    }
+
+    // Update fields if provided
+    if (title !== undefined) {
+        task.title = title.trim();
+    }
+
+    if (done !== undefined) {
+        task.done = done;
+    }
+
+    res.json(task);
+});
+
+// DELETE /tasks/:id
+app.delete('/tasks/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const index = tasks.findIndex(task => task.id === id);
+
+    // Check if task exists
+    if (index === -1) {
+        return res.status(404).json({
+            error: `Task ${id} not found`
+        });
+    }
+
+    // Remove task
+    tasks.splice(index, 1);
+
+    // No Content
+    res.status(204).send();
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
