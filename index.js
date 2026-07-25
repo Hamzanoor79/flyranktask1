@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
-
+const swaggerUi = require('swagger-ui-express');
 app.use(express.json());
+
+const swaggerDocument = require('./openapi.json');
 
 const PORT = 3000;
 
@@ -136,6 +138,8 @@ app.delete('/tasks/:id', (req, res) => {
     // No Content
     res.status(204).send();
 });
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
